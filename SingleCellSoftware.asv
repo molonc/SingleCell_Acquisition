@@ -1010,13 +1010,27 @@ end
 % --- Executes on button press in startImgButton.
 function startImgButton_Callback(hObject, eventdata, handles)
 handles.started = true;
-set(handles.status, 'String', 'Started acquisition');
+handles.selected = [];
+handles.selected = checkConcat(hObject, eventdata, handles);
+
 set(handles.pauseORresume, 'enable', 'on');
 set(hObject, 'enable', 'off');
-concatEnableDisable(hObject, eventdata, handles, false);
+set(handles.concat, 'enable', 'off');
+set(handles.concatUV, 'enable', 'off');
+set(handles.concatBlue, 'enable', 'off');
+set(handles.concatCyan, 'enable', 'off');
+set(handles.concatTeal, 'enable' ,'off');
+set(handles.concatGreen, 'enable', 'off');
+set(handles.concatRed, 'enable', 'off');
+set(handles.UVBar, 'enable', 'off');
+set(handles.BlueBar, 'enable', 'off');
+set(handles.CyanBar, 'enable', 'off');
+set(handles.TealBar, 'enable', 'off');
+set(handles.GreenBar, 'enable', 'off');
+set(handles.RedBar, 'enable', 'off');
 
 guidata(hObject, handles);
-pause(0.05);
+pause(1);
 % TODO: add start functionality, with concatenation at the end 
 % get values from the check boxes here, and append it to 
 % handles.selected %
@@ -1032,12 +1046,11 @@ if get(hObject, 'Value') == 1
     % pause %
     set(handles.status, 'String', 'Paused', 'ForegroundColor', [0, 0, 1]);
     set(hObject, 'String', 'Resume');
-    concatEnableDisable(hObject, eventdata, handles, true);
+    set(handles.
 else
     % resume %
     set(handles.status, 'String', 'Resumed', 'ForegroundColor', [0.2, 0.66, 0.32]);
     set(hObject, 'String', 'Pause');
-    concatEnableDisable(hObject, eventdata, handles, false);
     [hObject, eventdata, handles] = acquire(hObject, eventdata, handles);
 end
 guidata(hObject, handles);
@@ -1079,29 +1092,6 @@ set(handles.TealBar, 'visible', 'on');
 set(handles.GreenBar, 'visible', 'on');
 set(handles.RedBar, 'visible', 'on');
 
-guidata(hObject, handles);
-end
-
-
-function concatEnableDisable(hObject, eventdata, handles, onOff)
-if onOff
-    state = 'on';
-else
-    state = 'off';
-end
-set(handles.concat, 'enable', state);
-set(handles.concatUV, 'enable', state);
-set(handles.concatBlue, 'enable', state);
-set(handles.concatCyan, 'enable', state);
-set(handles.concatTeal, 'enable' ,state);
-set(handles.concatGreen, 'enable', state);
-set(handles.concatRed, 'enable', state);
-set(handles.UVBar, 'enable', state);
-set(handles.BlueBar, 'enable', state);
-set(handles.CyanBar, 'enable', state);
-set(handles.TealBar, 'enable', state);
-set(handles.GreenBar, 'enable', state);
-set(handles.RedBar, 'enable', state);
 guidata(hObject, handles);
 end
 
