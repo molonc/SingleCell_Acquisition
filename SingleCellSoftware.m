@@ -226,11 +226,16 @@ portList = get(hObject, 'String');
 port = get(hObject, 'Value');
 if port >= 2
     if handles.connectedStage ~= true
-        str = split(portList(port), 'COM');
-        portNum = str(2);
-        handles.stagePortNum = str2double(portNum);
-        set(handles.connect2stage, 'enable', 'on');
-        set(handles.stageStatus, 'String', 'Ready to Connect', 'ForegroundColor', [0.2, 0.66, 0.32]);
+        try
+            str = split(portList(port), 'COM');
+            portNum = str(2);
+            handles.stagePortNum = str2double(portNum);
+            set(handles.connect2stage, 'enable', 'on');
+            set(handles.stageStatus, 'String', 'Ready to Connect', 'ForegroundColor', [0.2, 0.66, 0.32]);
+        catch
+            warndlg('No available port detected.');
+            set(handles.connect2stage, 'enable', 'off');
+        end
     end
 else
     set(handles.connect2stage, 'enable', 'off');
@@ -246,6 +251,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 availablePorts = getAvailableComPort();
+% availablePorts = {'', 'COM11'};
 set(hObject, 'String', [{'Select a port'}, availablePorts]);
 guidata(hObject, handles);
 end
@@ -359,11 +365,16 @@ portList = get(hObject, 'String');
 port = get(hObject, 'Value');
 if port >= 2
     if handles.connectedScope ~= true
-        str = split(portList(port), 'COM');
-        portNum = str(2);
-        handles.scopePortNum = str2double(portNum);
-        set(handles.connect2scope, 'enable', 'on');
-        set(handles.scopeStatus, 'String', 'Ready to Connect', 'ForegroundColor', [0.2, 0.66, 0.32]);
+        try
+            str = split(portList(port), 'COM');
+            portNum = str(2);
+            handles.scopePortNum = str2double(portNum);
+            set(handles.connect2scope, 'enable', 'on');
+            set(handles.scopeStatus, 'String', 'Ready to Connect', 'ForegroundColor', [0.2, 0.66, 0.32]);
+        catch
+            warndlg('No available port detected.');
+            set(handles.connect2scope, 'enable', 'off');
+        end
     end
 else
     set(handles.connect2scope, 'enable', 'off');
@@ -379,6 +390,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 availablePorts = getAvailableComPort();
+% availablePorts = {'COM11'};
 set(hObject, 'String', [{'Select a port'}, availablePorts]);
 guidata(hObject, handles);
 end
@@ -491,11 +503,16 @@ portList = get(hObject, 'String');
 port = get(hObject, 'Value');
 if port >= 2
     if handles.connectedLasers ~= true
-        str = split(portList(port), 'COM');
-        portNum = str(2);
-        handles.laserPortNum = str2double(portNum);
-        set(handles.connect2lasers, 'enable', 'on');
-        set(handles.laserStatus, 'String', 'Ready to Connect', 'ForegroundColor', [0.2, 0.66, 0.32]);
+        try
+            str = split(portList(port), 'COM');
+            portNum = str(2);
+            handles.laserPortNum = str2double(portNum);
+            set(handles.connect2lasers, 'enable', 'on');
+            set(handles.laserStatus, 'String', 'Ready to Connect', 'ForegroundColor', [0.2, 0.66, 0.32]);
+        catch
+            warndlg('No available port detected.');
+            set(handles.connect2lasers, 'enable', 'off');
+        end
     end
 else
     set(handles.connect2lasers, 'enable', 'off');
@@ -511,6 +528,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 availablePorts = getAvailableComPort();
+% availablePorts = {'COM11'};
 set(hObject, 'String', [{'Select a port'}, availablePorts]);
 guidata(hObject, handles);
 end
@@ -1015,32 +1033,68 @@ set(handles.pauseORresume, 'enable', 'on');
 set(hObject, 'enable', 'off');
 concatEnableDisable(hObject, eventdata, handles, false);
 
+% save selected lasers %
+laserHandles = [handles.toggleUV, handles.toggleBlue, handles.toggleCyan, handles.toggleTeal, handles.toggleGreen, handles.toggleRed];
+handles.lasers = [];
+for i = 1:6
+    if get(laserHandles(i), 'Value') == 1
+        handles.lasers(end+1) = i;
+    end
+end
+
+set(handles.Quit, 'enable', 'off');
 guidata(hObject, handles);
 pause(0.05);
 % TODO: add start functionality, with concatenation at the end 
 % get values from the check boxes here, and append it to 
 % handles.selected %
-[hObject, eventdata, handles] = acquire(hObject, eventdata, handles);
-guidata(hObject, handles);
+
+try
+    for laser = 1:length(handles.lasers)
+        waitfor(handles.pauseORresume, 'Value', 0);
+        handles.curLaser = handles.lasers(laser);
+        handles.curRow = 1;
+        handles.curCol = 1;
+        [hObject, eventdata, handles] = acquire(hObject, eventdata, handles);
+    end
+
+    handles.finished = true;
+    set(handles.status, 'String', 'Acquisition completed', 'ForegroundColor', [0.2, 0.66, 0.32]);
+    set(handles.pauseORresume, 'enable', 'off');
+    guidata(hObject, handles);
+    pause(1);
+    set(handles.status, 'String', 'Concatenating images ...');
+    [hObject, eventdata, handles] = concatImage(hObject, eventdata, handles);
+    set(handles.status, 'String', 'Completed. You may close this window.');
+    set(handles.Quit, 'enable', 'on');
+    guidata(hObject, handles);
+    handles
+catch
+    disp('Quit.');
+end
 end
 
 % --- Executes on button press in pauseORresume.
 function pauseORresume_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of pauseORresume
-handles.paused = get(hObject, 'Value');
-if get(hObject, 'Value') == 1
-    % pause %
-    set(handles.status, 'String', 'Paused', 'ForegroundColor', [0, 0, 1]);
-    set(hObject, 'String', 'Resume');
-    concatEnableDisable(hObject, eventdata, handles, true);
-else
-    % resume %
-    set(handles.status, 'String', 'Resumed', 'ForegroundColor', [0.2, 0.66, 0.32]);
-    set(hObject, 'String', 'Pause');
-    concatEnableDisable(hObject, eventdata, handles, false);
-    [hObject, eventdata, handles] = acquire(hObject, eventdata, handles);
+try
+    handles.paused = get(hObject, 'Value');
+    if get(hObject, 'Value') == 1
+        % pause %
+        set(hObject, 'enable', 'off');
+        concatEnableDisable(hObject, eventdata, handles, true);
+    else
+        % resume %
+        set(handles.status, 'String', 'Resumed', 'ForegroundColor', [0.2, 0.66, 0.32]);
+        set(hObject, 'String', 'Pause');
+        set(handles.Quit, 'enable', 'off');
+        concatEnableDisable(hObject, eventdata, handles, false);
+        [hObject, eventdata, handles] = acquire(hObject, eventdata, handles);
+    end
+    guidata(hObject, handles);
+catch
+    disp('Quit.');
 end
-guidata(hObject, handles);
 end
 
 % --- Executes on button press in Quit.
@@ -1051,15 +1105,19 @@ end
 % --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
 % Hint: delete(hObject) closes the figure
-disp('Disconnecting from all instruments before quitting GUI ...');
+if handles.started && handles.paused == false && handles.finished == false
+    warndlg('Please pause the experiment before quitting.');
+else
+    disp('Disconnecting from all instruments before quitting GUI ...');
 
-[hObject, eventdata, handles] = disconnStage(hObject, eventdata, handles);
-[hObject, eventdata, handles] = disconnScope(hObject, eventdata, handles);
-[hObject, eventdata, handles] = disconnLasers(hObject, eventdata, handles);
-guidata(hObject, handles);
+    [hObject, eventdata, handles] = disconnStage(hObject, eventdata, handles);
+    [hObject, eventdata, handles] = disconnScope(hObject, eventdata, handles);
+    [hObject, eventdata, handles] = disconnLasers(hObject, eventdata, handles);
+    guidata(hObject, handles);
 
-disp('Quitting GUI ...');
-delete(hObject);
+    disp('Quitting GUI ...');
+    delete(hObject);
+end
 end
 
 
