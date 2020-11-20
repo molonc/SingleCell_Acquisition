@@ -22,7 +22,7 @@ function varargout = SingleCellSoftware(varargin)
 
 % Edit the above text to modify the response to help SingleCellSoftware
 
-% Last Modified by GUIDE v2.5 18-Nov-2020 14:53:03
+% Last Modified by GUIDE v2.5 20-Nov-2020 12:28:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -139,6 +139,16 @@ set(handles.stageZtext, 'String', num2str(handles.stageZ));
 guidata(hObject, handles);
 end
 
+% --- Executes on button press in refreshStagePort.
+function refreshStagePort_Callback(hObject, eventdata, handles)
+% hObject    handle to refreshStagePort (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+availablePorts = getAvailableComPort();
+set(handles.stagePortList, 'String', [{'Select a port'}, availablePorts]);
+guidata(hObject, handles);
+end
+
 % --- Executes on button press in connect2stage.
 function connect2stage_Callback(hObject, eventdata, handles)
 disp('Connecting to stage ...');
@@ -233,7 +243,7 @@ if port >= 2
             set(handles.connect2stage, 'enable', 'on');
             set(handles.stageStatus, 'String', 'Ready to Connect', 'ForegroundColor', [0.2, 0.66, 0.32]);
         catch
-            warndlg('No available port detected.');
+            warndlg('No available port detected. Check your connection, and click refresh');
             set(handles.connect2stage, 'enable', 'off');
         end
     end
@@ -357,6 +367,16 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Live View %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Live View %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% --- Executes on button press in refreshScopePort.
+function refreshScopePort_Callback(hObject, eventdata, handles)
+% hObject    handle to refreshScopePort (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+availablePorts = getAvailableComPort();
+set(handles.scopePortList, 'String', [{'Select a port'}, availablePorts]);
+guidata(hObject, handles);
+end
+
 % --- Executes on selection change in scopePortList.
 function scopePortList_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns scopePortList contents as cell array
@@ -372,7 +392,7 @@ if port >= 2
             set(handles.connect2scope, 'enable', 'on');
             set(handles.scopeStatus, 'String', 'Ready to Connect', 'ForegroundColor', [0.2, 0.66, 0.32]);
         catch
-            warndlg('No available port detected.');
+            warndlg('No available port detected. Check your connection, and click refresh');
             set(handles.connect2scope, 'enable', 'off');
         end
     end
@@ -494,6 +514,16 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Laser Control %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Laser Control %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+% --- Executes on button press in refreshLaserPort.
+function refreshLaserPort_Callback(hObject, eventdata, handles)
+% hObject    handle to refreshLaserPort (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+availablePorts = getAvailableComPort();
+set(handles.laserPortList, 'String', [{'Select a port'}, availablePorts]);
+guidata(hObject, handles);
+end
+
 % --- Executes on selection change in laserPortList.
 function laserPortList_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns laserPortList contents as cell array
@@ -510,7 +540,7 @@ if port >= 2
             set(handles.connect2lasers, 'enable', 'on');
             set(handles.laserStatus, 'String', 'Ready to Connect', 'ForegroundColor', [0.2, 0.66, 0.32]);
         catch
-            warndlg('No available port detected.');
+            warndlg('No available port detected. Check your connection, and click refresh');
             set(handles.connect2lasers, 'enable', 'off');
         end
     end
@@ -1327,3 +1357,4 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 end
+
