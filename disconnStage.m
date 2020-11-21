@@ -1,4 +1,10 @@
 function [hObject, eventdata, handles] = disconnStage(hObject, eventdata, handles)
-disp('Disconnect stage function here');
-guidata(hObject, handles);
+try
+    fclose(handles.stageConnection);
+    delete(handles.stageConnection);
+    disp('Disconnected from stage');
+    guidata(hObject, handles);
+catch
+    warndlg('Stage was not connected.');
+end
 end

@@ -22,7 +22,7 @@ function varargout = SingleCellSoftware(varargin)
 
 % Edit the above text to modify the response to help SingleCellSoftware
 
-% Last Modified by GUIDE v2.5 20-Nov-2020 15:46:52
+% Last Modified by GUIDE v2.5 20-Nov-2020 15:11:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -422,16 +422,6 @@ function ZstepEdit_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of ZstepEdit as text
 %        str2double(get(hObject,'String')) returns contents of ZstepEdit as a double
-prev = handles.ZstepSize;
-stepSize = str2double(get(hObject, 'String'));
-if isnan(stepSize) || floor(stepSize) ~= stepSize || stepSize > 500 || stepSize < 10
-    set(hObject, 'String', num2str(prev));
-    warndlg('Step size must be an integer in the range of [10, 500]');
-else
-    handles.ZstepSize = stepSize;
-end
-[hObject, eventdata, handles] = setZstep(hObject, eventdata, handles);
-guidata(hObject, handles);
 end
 
 
@@ -454,12 +444,12 @@ function ZstepUp_Callback(hObject, eventdata, handles)
 % hObject    handle to ZstepUp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if handles.ZstepSize < 500
-    handles.ZstepSize = handles.ZstepSize + 1;
+if handles.ZstepSize < 50
+    handles.XYstepSize = handles.XYstepSize + 1;
 end
-[hObject, eventdata, handles] = setZstep(hObject, eventdata, handles);
+[hObject, eventdata, handles] = setXYStep(hObject, eventdata, handles);
 guidata(hObject, handles);
-set(handles.ZstepEdit, 'String', num2str(handles.ZstepSize));
+set(handles.XYstepEdit, 'String', num2str(handles.XYstepSize));
 guidata(hObject, handles);
 end
 
@@ -472,7 +462,7 @@ function ZstepDown_Callback(hObject, eventdata, handles)
 if handles.ZstepSize > 10
     handles.ZstepSize = handles.ZstepSize - 1;
 end
-[hObject, eventdata, handles] = setZstep(hObject, eventdata, handles);
+[hObject, eventdata, handles] = setZStep(hObject, eventdata, handles);
 guidata(hObject, handles);
 set(handles.ZstepEdit, 'String', num2str(handles.ZstepSize));
 guidata(hObject, handles);
@@ -571,10 +561,8 @@ set(handles.Zdown, 'enable', 'on');
 set(handles.ZstepEdit, 'enable', 'on');
 set(handles.ZstepUp, 'enable', 'on');
 set(handles.ZstepDown, 'enable', 'on');
-set(handles.stageZtext, 'enable', 'on');
 
-[hObject, eventdata, handles] = getCurrentZ(hObject, eventdata, handles);
-set(handles.stageZtext, 'String', num2str(handles.stageZ));
+set(handles.stageZtext, 'enable', 'on');
 
 set(hObject, 'enable', 'off');
 guidata(hObject, handles);
