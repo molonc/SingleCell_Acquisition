@@ -6,10 +6,12 @@ function [hObject, eventdata, handles] = acquire(hObject, eventdata, handles)
        pause(0.5);
     end
 
-    function turnOnLaser(laser)
+    function [hObject, eventdata, handles] = turnOnLaser(hObject, eventdata, handles, laser)
         lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
         disp(['Turning on laser ', char(lasers(laser))]);
-        pause(0.5);
+        set(handles.status, 'String', ['Turning on laser ', char(lasers(laser))]);
+        guidata(hObject, handles);
+%         pause(0.5);
     end
 
     function takeNsaveImage()
@@ -27,7 +29,7 @@ function [hObject, eventdata, handles] = acquire(hObject, eventdata, handles)
 handles.selected = [];
 handles.selected = checkConcat(hObject, eventdata, handles);
 guidata(hObject, handles);
-turnOnLaser(handles.curLaser);
+[hObject, eventdata, handles] = turnOnLaser(hObject, eventdata, handles, handles.curLaser);
 ii = handles.curRow;
 jj = handles.curCol;
 % for i = ii:handles.chipRow/handles.imgRow

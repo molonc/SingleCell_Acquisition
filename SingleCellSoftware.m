@@ -638,7 +638,9 @@ function liveView_Callback(hObject, eventdata, handles)
 %     height = position(4) - position(2);
 if get(hObject, 'Value') == 1
     set(handles.liveViewMsg, 'Visible', 'off');
+    set(hObject, 'String', 'Stop Live View');
     %TODO: replace below with image capture %
+    % reference MERFISH to see how to achieve this %
     I = imread(fullfile(pwd, 'singlecell.jpg'));
     imshow(I);
     hold on
@@ -648,7 +650,7 @@ if get(hObject, 'Value') == 1
     hold off
 else
     % TODO: replace this with action %
-    disp('Stop live view now');
+    set(hObject, 'String', 'Live View');
 end
 guidata(hObject, handles);
 end
@@ -1222,6 +1224,65 @@ for i = 1:6
 end
 
 set(handles.Quit, 'enable', 'off');
+
+set(handles.toggleUV, 'enable', 'off');
+set(handles.editUV, 'enable', 'off');
+set(handles.sliderUV, 'enable', 'off');
+
+set(handles.toggleBlue, 'enable', 'off');
+set(handles.editBlue, 'enable', 'off');
+set(handles.sliderBlue, 'enable', 'off');
+
+set(handles.toggleCyan, 'enable', 'off');
+set(handles.editCyan, 'enable', 'off');
+set(handles.sliderCyan, 'enable', 'off');
+
+set(handles.toggleTeal, 'enable', 'off');
+set(handles.editTeal, 'enable', 'off');
+set(handles.sliderTeal, 'enable', 'off');
+
+set(handles.toggleGreen, 'enable', 'off');
+set(handles.editGreen, 'enable', 'off');
+set(handles.sliderGreen, 'enable', 'off');
+
+set(handles.toggleRed, 'enable', 'off');
+set(handles.editRed, 'enable', 'off');
+set(handles.sliderRed, 'enable', 'off');
+
+set(handles.disconnStage, 'enable', 'off');
+set(handles.disconnLasers, 'enable', 'off');
+set(handles.disconnScope, 'enable', 'off');
+
+set(handles.XYstepEdit, 'enable', 'off');
+set(handles.XYup, 'enable', 'off');
+set(handles.XYdown, 'enable', 'off');
+set(handles.XYright, 'enable', 'off');
+set(handles.XYleft, 'enable', 'off');
+set(handles.XYstepUp, 'enable', 'off');
+set(handles.XYstepDown, 'enable', 'off');
+
+set(handles.ZstepEdit, 'enable', 'off');
+set(handles.Zup, 'enable', 'off');
+set(handles.Zdown, 'enable', 'off');
+set(handles.ZstepUp, 'enable', 'off');
+set(handles.ZstepDown, 'enable', 'off');
+
+set(handles.stagePortList, 'enable', 'off');
+set(handles.refreshStagePort, 'enable', 'off');
+
+set(handles.scopePortList, 'enable', 'off');
+set(handles.refreshScopePort, 'enable', 'off');
+
+set(handles.laserPortList, 'enable', 'off');
+set(handles.refreshLaserPort, 'enable', 'off');
+
+set(handles.changeChip, 'enable', 'off');
+set(handles.rowPerImgList, 'enable', 'off');
+set(handles.colPerImgList, 'enable', 'off');
+set(handles.repetitionsList, 'enable', 'off');
+set(handles.outputFormatList, 'enable', 'off');
+set(handles.outputDirButton, 'enable', 'off');
+
 guidata(hObject, handles);
 pause(0.05);
 % TODO: add start functionality, with concatenation at the end 
