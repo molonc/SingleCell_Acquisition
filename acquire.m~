@@ -85,6 +85,8 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
     end
 
 % set up
+handles.selected = [];
+handles.selected = checkConcat(hObject, eventdata, handles);
 guidata(hObject, handles);
 [hObject, eventdata, handles] = turnOnLaser(hObject, eventdata, handles, handles.curLaser);
 laser = char(lasers(handles.curLaser));
@@ -105,7 +107,9 @@ jj = handles.curCol;
 % for i = ii:handles.chipRow/handles.imgRow
 %     for j = jj:handles.chipCol/handles.imgCol
 for i = ii:2
+    disp('row');
     for j = jj:2
+        disp('column');
         if (get(handles.pauseORresume, 'Value') == 0)
             handles.paused = false;
             handles = acquireTile(handles, i, j, curDir, laserIndex);
@@ -117,8 +121,10 @@ for i = ii:2
     end
     guidata(hObject, handles);
     if handles.paused
+        disp('paused here');
         break;
     else
+        disp('didnt pause here');
         handles.curRow = handles.curRow + 1;
         handles.curCol = 1;
         jj = 1;
@@ -126,8 +132,10 @@ for i = ii:2
     guidata(hObject, handles);
 end
 
+disp('check');
+handles
 
-if handles.paused || get(handles.pauseORresume, 'Value') == 1
+if handles.paused
     set(handles.status, 'String', 'Paused', 'ForegroundColor', [0, 0, 1]);
     set(handles.pauseORresume, 'String', 'Resume', 'enable',' on');
     set(handles.Quit, 'enable', 'on');

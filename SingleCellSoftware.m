@@ -160,7 +160,7 @@ handles.connectedStage = true;
 set(handles.stageStatus, 'String', 'Connected');
 set(handles.disconnStage, 'enable', 'on');
 set(hObject, 'enable', 'off');
-[hObject, eventdata, handles] = setXYStep(hObject, eventdata, handles);
+% [hObject, eventdata, handles] = setXYStep(hObject, eventdata, handles);
 
 % check if all connections have been fulfilled %
 checkConnections(handles);
@@ -177,8 +177,8 @@ set(handles.XYstepDown, 'enable', 'on');
 set(handles.stageXtext, 'enable', 'on');
 set(handles.stageYtext, 'enable', 'on');
 
-[hObject, eventdata, handles] = getCurrentPos(hObject, eventdata, handles);
-[hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
+% [hObject, eventdata, handles] = getCurrentPos(hObject, eventdata, handles);
+% [hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
 guidata(hObject, handles);
 end
 
@@ -252,8 +252,8 @@ function stagePortList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-availablePorts = getAvailableComPort().';
-% availablePorts = {'', 'COM11'};
+% availablePorts = getAvailableComPort().';
+availablePorts = {'COM11'};
 set(hObject, 'String', [{'Select a port'}, availablePorts]);
 guidata(hObject, handles);
 end
@@ -529,8 +529,8 @@ function scopePortList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-availablePorts = getAvailableComPort().';
-% availablePorts = {'COM11'};
+% availablePorts = getAvailableComPort().';
+availablePorts = {'COM11'};
 set(hObject, 'String', [{'Select a port'}, availablePorts]);
 guidata(hObject, handles);
 end
@@ -615,44 +615,58 @@ guidata(hObject, handles);
 end
 
 
-function showGrid(handles, width, height)
+function showGrid(handles, height, width)
 %mesh grid
 row = handles.imgRow;
 col = handles.imgCol;
 % horizontal lines
-x = [1 height];
-y = [width/row width/row];
+x = [1 width];
+y = [height/row height/row];
 plot(x,y,'LineWidth',2,'Color','g');
 % vertical lines
-for k = height/col:height/col:height-height/col
+for k = width/col:width/col:width-width/col
 x = [k k];
-y = [1 width];
+y = [1 height];
 plot(x,y,'LineWidth',2,'Color','g');
 end
 end
 
 % --- Executes on button press in liveView.
 function liveView_Callback(hObject, eventdata, handles)
-%     position = get(handles.LiveViewImg, 'Position');
-%     width = position(3) - position(1);
-%     height = position(4) - position(2);
-if get(hObject, 'Value') == 1
-    set(handles.liveViewMsg, 'Visible', 'off');
-    set(hObject, 'String', 'Stop Live View');
-    %TODO: replace below with image capture %
-    % reference MERFISH to see how to achieve this %
-    I = imread(fullfile(pwd, 'singlecell.jpg'));
-    imshow(I);
-    hold on
-    M = size(I,1);
-    N = size(I,2);
-    showGrid(handles, M, N);
-    hold off
-else
-    % TODO: replace this with action %
-    set(hObject, 'String', 'Live View');
+try
+    if get(hObject, 'Value') == 1
+        set(handles.liveViewMsg, 'Visible', 'off');
+        set(hObject, 'String', 'Stop Live View');
+        %TODO: replace below with image capture %
+        %TODO: get image size (probably from the package)
+        %     M = size(I,1);
+        %     N = size(I,2);
+        M = 666;
+        N = 999;
+        while get(hObject, 'Value') == 1
+            I = imitateLiveView(M, N);
+            imshow(I);
+            hold on
+            showGrid(handles, M, N);
+            drawnow;
+            hold off
+            height = M;
+            width = N;
+            row = 2;
+            col = 3;
+            r = 1;
+            c = 1;
+            i = I(((height/row)*(r-1))+1:((height/row)*r),((width/col)*(c-1))+1:(width/col)*c);
+            size(i)
+            imshow(i);
+        end
+    else
+        set(hObject, 'String', 'Live View');
+    end
+    guidata(hObject, handles);
+catch
+    warndlg('Please disable Live View before quitting.');
 end
-guidata(hObject, handles);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -707,8 +721,8 @@ function laserPortList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-availablePorts = getAvailableComPort().';
-% availablePorts = {'COM11'};
+% availablePorts = getAvailableComPort().';
+availablePorts = {'COM11'};
 set(hObject, 'String', [{'Select a port'}, availablePorts]);
 guidata(hObject, handles);
 end
@@ -1295,7 +1309,8 @@ try
         handles.curLaser = handles.lasers(laser);
         handles.curRow = 1;
         handles.curCol = 1;
-        [hObject, eventdata, handles] = acquire(hObject, eventdata, handles);
+        handles.laserIndex = laser;
+        [hObject, eventdata, handles] = acquire(hObject, eventdata, handles, laser);
     end
 
     handles.finished = true;
@@ -1303,6 +1318,8 @@ try
     set(handles.pauseORresume, 'enable', 'off');
     guidata(hObject, handles);
     pause(1);
+    handles.selected = [];
+    handles.selected = checkConcat(hObject, eventdata, handles);
     set(handles.status, 'String', 'Concatenating images ...');
     [hObject, eventdata, handles] = concatImage(hObject, eventdata, handles);
     set(handles.status, 'String', 'Completed. You may close this window.');
@@ -1310,30 +1327,31 @@ try
     guidata(hObject, handles);
     handles
 catch
-    disp('Quit.');
+    disp('finished.');
 end
 end
 
 % --- Executes on button press in pauseORresume.
 function pauseORresume_Callback(hObject, eventdata, handles)
-% Hint: get(hObject,'Value') returns toggle state of pauseORresume
 try
     handles.paused = get(hObject, 'Value');
     if get(hObject, 'Value') == 1
         % pause %
         set(hObject, 'enable', 'off');
         concatEnableDisable(hObject, eventdata, handles, true);
+        guidata(hObject, handles);
     else
         % resume %
         set(handles.status, 'String', 'Resumed', 'ForegroundColor', [0.2, 0.66, 0.32]);
         set(hObject, 'String', 'Pause');
         set(handles.Quit, 'enable', 'off');
         concatEnableDisable(hObject, eventdata, handles, false);
-        [hObject, eventdata, handles] = acquire(hObject, eventdata, handles);
+        guidata(hObject, handles);
+        [hObject, eventdata, handles] = acquire(hObject, eventdata, handles, handles.laserIndex);
     end
     guidata(hObject, handles);
 catch
-    disp('Quit.');
+    disp('pause resume callback ended.');
 end
 end
 
