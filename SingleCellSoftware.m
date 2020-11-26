@@ -53,6 +53,10 @@ function SingleCellSoftware_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to SingleCellSoftware (see VARARGIN)
 
+addpath(fullfile(pwd, 'acquisition'));
+addpath(fullfile(pwd, 'connection'));
+addpath(fullfile(pwd, 'position'));
+
 % Choose default command line output for SingleCellSoftware
 handles.output = hObject;
 
