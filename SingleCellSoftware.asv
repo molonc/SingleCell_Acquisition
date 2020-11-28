@@ -888,7 +888,6 @@ switch tag
         [hObject, handles] = powerUV(hObject, handles);
     case 'sliderBlue'
         set(handles.editBlue, 'String', num2str(floor(value)));
-        [hObject, handles] = powerBlue(hObject, handles);
     case 'sliderCyan'
         set(handles.editCyan, 'String', num2str(floor(value)));
         [hObject, handles] = powerCyan(hObject, handles);
@@ -927,12 +926,6 @@ function toggleUV_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of toggleUV
 toggleOnOff(hObject, handles.editUV, handles.sliderUV, get(hObject, 'Value'));
 handles.UVOn = 1 - handles.UVOn;
-if handles.UVOn == 1
-    [hObject, eventdata, handles] = enableUV(hObject, eventdata, handles);
-    [hObject, handles] = powerUV(hObject, handles);
-else
-    [hObject, eventdata, handles] = disableAll(hObject, eventdata, handles);
-end
 guidata(hObject, handles);
 end
 
@@ -993,7 +986,6 @@ else
     handles.BluePower = power;
 end
 changePower(hObject, handles.sliderBlue);
-[hObject, handles] = powerBlue(hObject, handles);
 guidata(hObject, handles);
 end
 
@@ -1011,12 +1003,6 @@ function toggleBlue_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of toggleBlue
 toggleOnOff(hObject, handles.editBlue, handles.sliderBlue, get(hObject, 'Value'));
 handles.BlueOn = 1 - handles.BlueOn;
-if handles.BlueOn == 1
-    [hObject, eventdata, handles] = enableBlue(hObject, eventdata, handles);
-    [hObject, handles] = powerBlue(hObject, handles);
-else
-    [hObject, eventdata, handles] = disableAll(hObject, eventdata, handles);
-end
 guidata(hObject, handles);
 end
 
