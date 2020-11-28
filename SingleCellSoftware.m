@@ -1408,7 +1408,12 @@ else
 
     [hObject, eventdata, handles] = disconnStage(hObject, eventdata, handles);
     [hObject, eventdata, handles] = disconnScope(hObject, eventdata, handles);
-    [hObject, eventdata, handles] = disconnLasers(hObject, eventdata, handles);
+    try
+        [hObject, eventdata, handles] = disableAll(hObject, eventdata, handles);
+        [hObject, eventdata, handles] = disconnLasers(hObject, eventdata, handles);
+    catch
+        warndlg('Lasers were not connected.');
+    end
     guidata(hObject, handles);
 
     disp('Quitting GUI ...');
