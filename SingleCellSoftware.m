@@ -894,11 +894,13 @@ switch tag
         [hObject, handles] = powerCyan(hObject, handles);
     case 'sliderTeal'
         set(handles.editTeal, 'String', num2str(floor(value)));
+        [hObject, handles] = powerTeal(hObject, handles);
     case 'sliderGreen'
         set(handles.editGreen, 'String', num2str(floor(value)));
         [hObject, handles] = powerGreen(hObject, handles);
     case 'sliderRed'
         set(handles.editRed, 'String', num2str(floor(value)));
+        [hObject, handles] = powerRed(hObject, handles);
 end
 end
 
@@ -1114,6 +1116,7 @@ else
 end
 guidata(hObject, handles);
 changePower(hObject, handles.sliderTeal);
+[hObject, handles] = powerTeal(hObject, handles);
 end
 
 
@@ -1130,6 +1133,12 @@ function toggleTeal_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of toggleTeal
 toggleOnOff(hObject, handles.editTeal, handles.sliderTeal, get(hObject, 'Value'));
 handles.TealOn = 1 - handles.TealOn;
+if handles.TealOn == 1
+    [hObject, eventdata, handles] = enableTeal(hObject, eventdata, handles);
+    [hObject, handles] = powerTeal(hObject, handles);
+else
+    [hObject, eventdata, handles] = disableAll(hObject, eventdata, handles);
+end
 guidata(hObject, handles);
 end
 
@@ -1197,6 +1206,12 @@ function toggleRed_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of toggleRed
 toggleOnOff(hObject, handles.editRed, handles.sliderRed, get(hObject, 'Value'));
 handles.RedOn = 1 - handles.RedOn;
+if handles.RedOn == 1
+    [hObject, eventdata, handles] = enableRed(hObject, eventdata, handles);
+    [hObject, handles] = powerRed(hObject, handles);
+else
+    [hObject, eventdata, handles] = disableAll(hObject, eventdata, handles);
+end
 guidata(hObject, handles);
 end
 
@@ -1214,6 +1229,7 @@ else
 end
 guidata(hObject, handles);
 changePower(hObject, handles.sliderRed);
+[hObject, handles] = powerRed(hObject, handles);
 end
 
 
