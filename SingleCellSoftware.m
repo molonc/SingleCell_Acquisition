@@ -558,9 +558,15 @@ portNum = str(2);
 handles.scopePortNum = str2double(portNum);
 
 % do the connection here
+% connecting to microscope means connecting to the Z stage & camera &
+% everything in between
 [hObject, eventdata, handles] = connect2scope(hObject, eventdata, handles);
+disp('Successfully connected to Nikon TiE.');
 
-disp('Succesfully connected to Nikon TiE.');
+disp('Connecting to Point Grey Camera ...');
+[hObject, eventdata, handles] = connect2camera(hObject, eventdata, handles);
+disp('Successfully connected to Camera.');
+
 set(handles.scopeStatus, 'String', 'Connected');
 handles.connectedScope = true;
 [hObject, eventdata, handles] = setZstep(hObject, eventdata, handles);
@@ -593,6 +599,7 @@ set(handles.scopeStatus, 'String', 'Disconnecting ...', 'ForegroundColor', [1, 0
 
 % disconnect here %
 [hObject, eventdata, handles] = disconnScope(hObject, eventdata, handles);
+[hObject, eventdata, handles] = disconnCamera(hObject, eventdata, handles);
 
 handles.connectedScope = false;
 handles.scopePortNum = -1;
@@ -646,25 +653,30 @@ try
         %TODO: get image size (probably from the package)
         %     M = size(I,1);
         %     N = size(I,2);
-        M = 666;
-        N = 999;
+        M = 1200;
+        N = 1920;
+        camera_settings = getselectedsource(handles.cameraConnection);
+        camera_settings.Shutter = 0.5; %set exposure time
+        start(handles.cameraConnection);
         while get(hObject, 'Value') == 1
-            I = imitateLiveView(M, N);
-            imshow(I);
+            [hObject, eventdata, handles, capture] = acquireView(hObject, eventdata, handles);
+%             imaqmontage(capture);
+            imshow(capture);
             hold on
             showGrid(handles, M, N);
             drawnow;
             hold off
-            height = M;
-            width = N;
-            row = 2;
-            col = 3;
-            r = 1;
-            c = 1;
+%             height = M;
+%             width = N;
+%             row = 2;
+%             col = 3;
+%             r = 1;
+%             c = 1;
 %             i = I(((height/row)*(r-1))+1:((height/row)*r),((width/col)*(c-1))+1:(width/col)*c);
 %             size(i)
 %             imshow(i);
         end
+        stop(handles.cameraConnection);
     else
         set(hObject, 'String', 'Live View');
     end
@@ -746,9 +758,13 @@ handles.laserPortNum = str2double(portNum);
 
 % do the connection here
 [hObject, eventdata, handles] = connect2lasers(hObject, eventdata, handles);
+[hObject, eventdata, handles] = getTemp(hObject, eventdata, handles);
 
 disp('Succesfully connected to lasers.');
 handles.connectedLasers = true;
+set(handles.laserStatus, 'String', [num2str(handles.laserTemp), ' oC']);
+guidata(hObject, handles);
+pause(1);
 set(handles.laserStatus, 'String', 'Connected');
 set(handles.disconnLasers, 'enable', 'on');
 set(hObject, 'enable', 'off');
@@ -757,15 +773,10 @@ set(hObject, 'enable', 'off');
 checkConnections(handles);
 
 set(handles.toggleUV, 'enable', 'on', 'ForegroundColor', [0.3, 0.3, 0.3]);
-
 set(handles.toggleBlue, 'enable', 'on', 'ForegroundColor', [0.3, 0.3, 0.3]);
-
 set(handles.toggleCyan, 'enable', 'on', 'ForegroundColor', [0.3, 0.3, 0.3]);
-
 set(handles.toggleTeal, 'enable', 'on', 'ForegroundColor', [0.3, 0.3, 0.3]);
-
 set(handles.toggleGreen, 'enable', 'on', 'ForegroundColor', [0.3, 0.3, 0.3]);
-
 set(handles.toggleRed, 'enable', 'on', 'ForegroundColor', [0.3, 0.3, 0.3]);
 
 guidata(hObject, handles);
@@ -1424,6 +1435,7 @@ else
 
     [hObject, eventdata, handles] = disconnStage(hObject, eventdata, handles);
     [hObject, eventdata, handles] = disconnScope(hObject, eventdata, handles);
+    [hObject, eventdata, handles] = disconnCamera(hObject, eventdata, handles);
     try
         [hObject, eventdata, handles] = disableAll(hObject, eventdata, handles);
         [hObject, eventdata, handles] = disconnLasers(hObject, eventdata, handles);
