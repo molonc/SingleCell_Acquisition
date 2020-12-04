@@ -22,7 +22,7 @@ function varargout = SingleCellSoftware(varargin)
 
 % Edit the above text to modify the response to help SingleCellSoftware
 
-% Last Modified by GUIDE v2.5 20-Nov-2020 15:46:52
+% Last Modified by GUIDE v2.5 04-Dec-2020 11:44:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -182,6 +182,10 @@ set(handles.XYstepDown, 'enable', 'on');
 set(handles.stageXtext, 'enable', 'on');
 set(handles.stageYtext, 'enable', 'on');
 
+if handles.connectedScope == true
+    set(handles.saveCorners, 'enable', 'on');
+end
+
 [hObject, eventdata, handles] = getCurrentPos(hObject, eventdata, handles);
 [hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
 guidata(hObject, handles);
@@ -214,6 +218,8 @@ set(handles.XYstepDown, 'enable', 'off');
 
 set(handles.stageXtext, 'enable', 'off');
 set(handles.stageYtext, 'enable', 'off');
+
+set(handles.saveCorners, 'enable', 'off');
 
 set(handles.startImgButton, 'enable', 'off');
 set(handles.stageStatus, 'String', 'Disconnected'); 
@@ -483,6 +489,38 @@ set(handles.ZstepEdit, 'String', num2str(handles.ZstepSize));
 guidata(hObject, handles);
 end
 
+
+% --- Executes on button press in first.
+function first_Callback(hObject, eventdata, handles)
+% hObject    handle to first (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+end
+
+
+% --- Executes on button press in second.
+function second_Callback(hObject, eventdata, handles)
+% hObject    handle to second (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+end
+
+
+% --- Executes on button press in third.
+function third_Callback(hObject, eventdata, handles)
+% hObject    handle to third (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+end
+
+% --- Executes on button press in saveCorners.
+function saveCorners_Callback(hObject, eventdata, handles)
+% hObject    handle to saveCorners (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+disp('Set calibrated corner positions here');
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -571,6 +609,10 @@ set(handles.scopeStatus, 'String', 'Connected');
 handles.connectedScope = true;
 [hObject, eventdata, handles] = setZstep(hObject, eventdata, handles);
 
+if handles.connectedStage == true
+    set(handles.saveCorners, 'enable', 'on');
+end
+
 % check connections %
 checkConnections(handles);
 
@@ -617,6 +659,8 @@ set(handles.ZstepUp, 'enable', 'off');
 set(handles.ZstepDown, 'enable', 'off');
 set(handles.Zup, 'enable', 'off');
 set(handles.Zdown, 'enable', 'off');
+
+set(handles.saveCorners, 'enable', 'off');
 
 set(handles.startImgButton, 'enable', 'off');
 set(handles.scopeStatus, 'String', 'Disconnected'); 
@@ -1655,4 +1699,30 @@ function repetitionsList_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+end
+
+
+% --- Executes on button press in exposureContrasts.
+function exposureContrasts_Callback(hObject, eventdata, handles)
+% hObject    handle to exposureContrasts (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+end
+
+
+% --- Executes on button press in autofocus.
+function autofocus_Callback(hObject, eventdata, handles)
+% hObject    handle to autofocus (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+end
+
+
+% --- Executes on button press in flatfieldCheck.
+function flatfieldCheck_Callback(hObject, eventdata, handles)
+% hObject    handle to flatfieldCheck (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of flatfieldCheck
 end
