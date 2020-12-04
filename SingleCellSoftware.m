@@ -68,6 +68,9 @@ handles.paused = false;
 handles.finished = false;
 handles.curRow = 1;     % currently acquiring row
 handles.curCol = 1;     % currently acquiring col
+handles.hour = 0;
+handles.min = 0;
+handles.sec = 0;
 
 %% connection %%
 handles.connectedScope = false;
@@ -1427,6 +1430,8 @@ try
     set(handles.pauseORresume, 'enable', 'off');
     guidata(hObject, handles);
     pause(1);
+    
+    % concatenation
     handles.selected = [];
     handles.selected = checkConcat(hObject, eventdata, handles);
     set(handles.status, 'String', 'Concatenating images ...');
@@ -1434,7 +1439,7 @@ try
     set(handles.status, 'String', 'Completed. You may close this window.');
     set(handles.Quit, 'enable', 'on');
     guidata(hObject, handles);
-    handles
+    handles             % TODO: remove this
 catch
     disp('finished.');
 end
