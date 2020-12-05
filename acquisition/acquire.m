@@ -11,6 +11,7 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
     function [hObject, eventdata, handles] = turnOnLaser(hObject, eventdata, handles, laser)
         disp(['Turning on laser ', char(lasers(laser))]);
         set(handles.status, 'String', ['Turning on laser ', char(lasers(laser))]);
+        % TODO: actually enable lasers here
         guidata(hObject, handles);
 %         pause(0.5);
     end

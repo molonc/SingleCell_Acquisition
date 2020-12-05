@@ -11,6 +11,7 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
     function [hObject, eventdata, handles] = turnOnLaser(hObject, eventdata, handles, laser)
         disp(['Turning on laser ', char(lasers(laser))]);
         set(handles.status, 'String', ['Turning on laser ', char(lasers(laser))]);
+        % TODO: actually enable lasers here
         guidata(hObject, handles);
 %         pause(0.5);
     end
@@ -86,6 +87,7 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
 
 % set up
 guidata(hObject, handles);
+stop(handles.cameraConnection);
 [hObject, eventdata, handles] = turnOnLaser(hObject, eventdata, handles, handles.curLaser);
 laser = char(lasers(handles.curLaser));
 laserDir = fullfile(handles.outputDir, laser);

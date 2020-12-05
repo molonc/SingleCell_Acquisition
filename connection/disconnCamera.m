@@ -1,6 +1,8 @@
 function [hObject, eventdata, handles] = disconnCamera(hObject, eventdata, handles)
 try
+    stop(handles.cameraConnection);
     delete(handles.cameraConnection);
+    clear handles.cameraConnection;
     disp('Disconnected from camera');
     guidata(hObject, handles);
 catch

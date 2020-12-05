@@ -45,7 +45,7 @@ fwrite(laser, powerBlue, 'uint8');
 cyanOnCmd = sscanf('4F 7B 50', '%2X');
 fwrite(laser, cyanOnCmd, 'uint8');
 
-cyanPowerDec = 10;
+cyanPowerDec = 100;
 cyanPowerHex = dec2hex(255-cyanPowerDec, 2);
 powerCyanCmd = sscanf(['53 18 03 02 F', cyanPowerHex, '0 50'], '%2X');
 fwrite(laser, powerCyanCmd, 'uint8');

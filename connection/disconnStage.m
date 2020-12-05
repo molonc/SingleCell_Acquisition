@@ -2,6 +2,7 @@ function [hObject, eventdata, handles] = disconnStage(hObject, eventdata, handle
 try
     fclose(handles.stageConnection);
     delete(handles.stageConnection);
+%     clear handles.stageConnection;
     disp('Disconnected from stage');
     guidata(hObject, handles);
 catch

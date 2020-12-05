@@ -22,7 +22,7 @@ function varargout = SingleCellSoftware(varargin)
 
 % Edit the above text to modify the response to help SingleCellSoftware
 
-% Last Modified by GUIDE v2.5 04-Dec-2020 11:44:36
+% Last Modified by GUIDE v2.5 04-Dec-2020 17:01:20
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -95,7 +95,7 @@ handles.GreenPower = 0;
 handles.RedPower = 0;
 
 %% stage cal %%
-handles.XYstepSize = 80;
+handles.XYstepSize = 10;
 handles.ZstepSize = 10;
 handles.stageX = 0;
 handles.stageY = 0;
@@ -205,7 +205,7 @@ set(handles.stageStatus, 'String', 'Disconnecting ...', 'ForegroundColor', [1, 0
 
 handles.connectedStage = false;
 handles.stagePortNum = -1;
-handles.XYstepSize = 80;
+handles.XYstepSize = 10;
 set(handles.XYstepEdit, 'String', num2str(handles.XYstepSize));
 
 set(hObject, 'enable', 'off');
@@ -387,9 +387,9 @@ function XYstepEdit_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of XYstepEdit as a double
 prev = handles.XYstepSize;
 stepSize = str2double(get(hObject, 'String'));
-if isnan(stepSize) || floor(stepSize) ~= stepSize || stepSize > 1000 || stepSize < 80
+if isnan(stepSize) || floor(stepSize) ~= stepSize || stepSize > 1000 || stepSize < 10
     set(hObject, 'String', num2str(prev));
-    warndlg('Step size must be an integer in the range of [80, 1000]');
+    warndlg('Step size must be an integer in the range of [10, 1000]');
 else
     handles.XYstepSize = stepSize;
 end
@@ -419,7 +419,7 @@ end
 
 % --- Executes on button press in XYstepDown.
 function XYstepDown_Callback(hObject, eventdata, handles)
-if handles.XYstepSize > 80
+if handles.XYstepSize > 10
     handles.XYstepSize = handles.XYstepSize - 1;
 end
 [hObject, eventdata, handles] = setXYStep(hObject, eventdata, handles);
@@ -705,8 +705,9 @@ try
         camera_settings = getselectedsource(handles.cameraConnection);
         camera_settings.Shutter = 0.5; %set exposure time
         start(handles.cameraConnection);
-        while get(hObject, 'Value') == 1
+        while isvalid(hObject) && get(hObject, 'Value') == 1
             [hObject, eventdata, handles, capture] = acquireView(hObject, eventdata, handles);
+            % capture size is H1200xW1920
 %             imaqmontage(capture);
             imshow(capture);
             hold on
@@ -723,13 +724,15 @@ try
 %             size(i)
 %             imshow(i);
         end
-        stop(handles.cameraConnection);
+        if isvalid(hObject)
+            stop(handles.cameraConnection);
+        end
     else
         set(hObject, 'String', 'Live View');
     end
     guidata(hObject, handles);
 catch
-    warndlg('Please disable Live View before quitting.');
+    
 end
 end
 
@@ -1495,6 +1498,7 @@ else
 
     disp('Quitting GUI ...');
     delete(hObject);
+    clear;
 end
 end
 
