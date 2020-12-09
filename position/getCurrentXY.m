@@ -1,4 +1,4 @@
-function [hObject, eventdata, handles] = getCurrentPos(hObject, eventdata, handles)
+function [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles)
 % X
 fwrite(handles.stageConnection, [char(24) char(97) char(3) char(58)]);
 xPosData = fread(handles.stageConnection, 3, 'char');
@@ -25,12 +25,7 @@ else
     warndlg('Cannot obtain stage position. Check your stage connection.');
 end
 
-% Z
-% this is actually done by the microscope
-[hObject, eventdata, handles] = getCurrentZ(hObject, eventdata, handles);
-
 handles.stageX = currentPosition(1);
 handles.stageY = currentPosition(2);
-% handles.stageZ = currentPosition(3);
 guidata(hObject, handles);
 end

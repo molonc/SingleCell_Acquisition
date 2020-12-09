@@ -3,17 +3,36 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
 
     function goToTile(handles, row, col)
        disp(['going to tile row ', num2str(row), ' col ', num2str(col)]);
-       % do things here. remember to check for the state within here as
-       % well
-       pause(0.5);
+       % calculate the tile position based on row and col
+       % call goToXYZ with the position
+       pause(0.1);
     end
 
     function [hObject, eventdata, handles] = turnOnLaser(hObject, eventdata, handles, laser)
         disp(['Turning on laser ', char(lasers(laser))]);
         set(handles.status, 'String', ['Turning on laser ', char(lasers(laser))]);
-        % TODO: actually enable lasers here
+        switch laser
+            case 1
+                [hObject, eventdata, handles] = enableUV(hObject, eventdata, handles);
+                [hObject, handles] = powerUV(hObject, handles);
+            case 2
+                [hObject, eventdata, handles] = enableBlue(hObject, eventdata, handles);
+                [hObject, handles] = powerBlue(hObject, handles);
+            case 3
+                [hObject, eventdata, handles] = enableCyan(hObject, eventdata, handles);
+                [hObject, handles] = powerCyan(hObject, handles);
+            case 4
+                [hObject, eventdata, handles] = enableTeal(hObject, eventdata, handles);
+                [hObject, handles] = powerTeal(hObject, handles);
+            case 5
+                [hObject, eventdata, handles] = enableGreen(hObject, eventdata, handles);
+                [hObject, handles] = powerGreen(hObject, handles);
+            case 6
+                [hObject, eventdata, handles] = enableRed(hObject, eventdata, handles);
+                [hObject, handles] = powerRed(hObject, handles);
+        end
+        
         guidata(hObject, handles);
-%         pause(0.5);
     end
 
     function figure = splitImage(image, row, col, r, c)
@@ -50,7 +69,7 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
 
     function takeNsaveImage(handles, tileRow, tileCol, folderPath, laserIndex)
         disp('Taking image');
-        pause(0.5);
+        pause(0.1);
         laser = char(lasers(handles.curLaser));
         % image obtained here
         [hObject, eventdata, handles, capture] = acquireView(hObject, eventdata, handles);
@@ -66,10 +85,10 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
                 % calculate the indices of row and column
                 % in the entire chip
                 saveImage(well, tileRow, tileCol, row, col, r, c, folderPath, laserIndex);
-                pause(0.5);
+                pause(0.1);
             end
         end
-        pause(0.5);
+        pause(0.1);
     end
 
     function handles = acquireTile(handles, row, col, folderPath, laserIndex)

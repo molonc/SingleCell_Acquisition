@@ -1490,6 +1490,7 @@ pause(0.05);
 % TODO: add start functionality, with concatenation at the end 
 % get values from the check boxes here, and append it to 
 % handles.selected %
+
 try
     for laser = 1:length(handles.lasers)
         waitfor(handles.pauseORresume, 'Value', 0);
@@ -1799,5 +1800,5 @@ function autofocus_Callback(hObject, eventdata, handles)
 % hObject    handle to autofocus (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-disp('TODO: Complete autofocus function here');
+disp('
 end
