@@ -14,7 +14,9 @@ accuracy = 10;      % edit this to change the positional accuracy in um
 while abs(targetX-curX) >= accuracy
     % move here
     disp('Moving X');
+    disp(curX);
     diff = targetX-curX;
+    disp(diff);
     % if diff > 0, that means stage should move to right (inc)
     % else stage should move to left (dec)
     if diff > 0
@@ -27,6 +29,7 @@ while abs(targetX-curX) >= accuracy
         [hObject, eventdata, handles] = setXStep(hObject, eventdata, handles, diff);
         [hObject, eventdata, handles] = decX(hObject, eventdata, handles);
     end
+    pause(.5);      % max movement takes about 0.5 second to finish
     [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
     curX = handles.stageX;
 end
@@ -36,7 +39,9 @@ disp('Done moving X');
 while abs(targetY-curY) >= accuracy
     % move here
     disp('Moving Y');
+    disp(curY);
     diff = targetY-curY;
+    disp(diff);
     % if diff > 0, that means stage should move up (inc)
     % else stage should move down (dec)
     if diff > 0
@@ -49,6 +54,7 @@ while abs(targetY-curY) >= accuracy
         [hObject, eventdata, handles] = setYStep(hObject, eventdata, handles, diff);
         [hObject, eventdata, handles] = decY(hObject, eventdata, handles);
     end
+    pause(.5);      % max movement takes about 0.5 second to finish
     [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
     curY = handles.stageY;
 end
@@ -62,4 +68,6 @@ while abs(targetZ-curZ) >= accuracy
     curZ = handles.stageZ;
 end
 
+[hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
+guidata(hObject, handles);
 end

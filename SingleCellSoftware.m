@@ -207,6 +207,9 @@ set(handles.stageXtext, 'enable', 'on');
 set(handles.stageYtext, 'enable', 'on');
 
 if handles.connectedScope == true
+    set(handles.firstToggle, 'enable', 'on');
+    set(handles.secondToggle, 'enable', 'on');
+    set(handles.thirdToggle, 'enable', 'on');
     set(handles.saveCorner, 'enable', 'on');
     set(handles.goToCorner, 'enable', 'on');
 end
@@ -244,6 +247,9 @@ set(handles.XYstepDown, 'enable', 'off');
 set(handles.stageXtext, 'enable', 'off');
 set(handles.stageYtext, 'enable', 'off');
 
+set(handles.firstToggle, 'enable', 'off');
+set(handles.secondToggle, 'enable', 'off');
+set(handles.thirdToggle, 'enable', 'off');
 set(handles.saveCorner, 'enable', 'off');
 set(handles.goToCorner, 'enable', 'off');
 
@@ -301,8 +307,12 @@ function XYleft_Callback(hObject, eventdata, handles)
 % move stage
 [hObject, eventdata, handles] = decX(hObject, eventdata, handles);
 % update current pos
+set(hObject, 'enable', 'off');
+pause(.5);      % max movement takes about 0.5 second to finish
+set(hObject, 'enable', 'on');
 [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
 % update pos on gui
+handles.stageX
 [hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
 guidata(hObject, handles);
 end
@@ -313,6 +323,9 @@ function XYright_Callback(hObject, eventdata, handles)
 % move stage
 [hObject, eventdata, handles] = incX(hObject, eventdata, handles);
 % update current pos
+set(hObject, 'enable', 'off');
+pause(.5);      % max movement takes about 0.5 second to finish
+set(hObject, 'enable', 'on');
 [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
 % show current pos on gui
 [hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
@@ -325,6 +338,9 @@ function XYup_Callback(hObject, eventdata, handles)
 % move stage
 [hObject, eventdata, handles] = incY(hObject, eventdata, handles);
 % update current pos
+set(hObject, 'enable', 'off');
+pause(.5);      % max movement takes about 0.5 second to finish
+set(hObject, 'enable', 'on');
 [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
 % update pos on gui
 [hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
@@ -337,6 +353,9 @@ function XYdown_Callback(hObject, eventdata, handles)
 % move stage
 [hObject, eventdata, handles] = decY(hObject, eventdata, handles);
 % update current pos
+set(hObject, 'enable', 'off');
+pause(.5);      % max movement takes about 0.5 second to finish
+set(hObject, 'enable', 'on');
 [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
 % update pos on gui
 [hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
@@ -529,7 +548,7 @@ if get(hObject, 'Value') == 1
         corner = validCorner(handles);
         [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
         [hObject, eventdata, handles] = getCurrentZ(hObject, eventdata, handles);
-        
+        handles.stageX
         switch corner
             case 1
                 disp('Saving coordinates for corner 1');
@@ -684,6 +703,9 @@ handles.connectedScope = true;
 [hObject, eventdata, handles] = setZstep(hObject, eventdata, handles);
 
 if handles.connectedStage == true
+    set(handles.firstToggle, 'enable', 'on');
+    set(handles.secondToggle, 'enable', 'on');
+    set(handles.thirdToggle, 'enable', 'on');
     set(handles.saveCorner, 'enable', 'on');
     set(handles.goToCorner, 'enable', 'on');
 end
@@ -735,6 +757,9 @@ set(handles.ZstepDown, 'enable', 'off');
 set(handles.Zup, 'enable', 'off');
 set(handles.Zdown, 'enable', 'off');
 
+set(handles.firstToggle, 'enable', 'off');
+set(handles.secondToggle, 'enable', 'off');
+set(handles.thirdToggle, 'enable', 'off');
 set(handles.saveCorner, 'enable', 'off');
 set(handles.goToCorner, 'enable', 'off');
 
