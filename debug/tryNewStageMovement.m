@@ -51,11 +51,11 @@ fopen(stage);
 % clear input buffer
 flushinput(stage);
 
-move_cmd = double('MOVE X=100 Y=100');
+move_cmd = double('MOVE X=100 Y=100\r');
 fwrite(stage, move_cmd);
 
 % if the above doesn't work, try this
-% move_cmd = 'MOVE X=100 Y=100';
+% move_cmd = 'MOVE X=100 Y=100\r';
 % fwrite(stage, move_cmd);
 
 % if it still doesn't work, try adding '\r' manually

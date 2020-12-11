@@ -388,9 +388,9 @@ function XYstepEdit_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of XYstepEdit as a double
 prev = handles.XYstepSize;
 stepSize = str2double(get(hObject, 'String'));
-if isnan(stepSize) || floor(stepSize) ~= stepSize || stepSize > 1000 || stepSize < 10
+if isnan(stepSize) || floor(stepSize) ~= stepSize || stepSize > 3000 || stepSize < 10
     set(hObject, 'String', num2str(prev));
-    warndlg('Step size must be an integer in the range of [10, 1000]');
+    warndlg('Step size must be an integer in the range of [10, 3000]');
 else
     handles.XYstepSize = stepSize;
 end
@@ -409,7 +409,7 @@ end
 
 % --- Executes on button press in XYstepUp.
 function XYstepUp_Callback(hObject, eventdata, handles)
-if handles.XYstepSize < 1000
+if handles.XYstepSize < 3000
     handles.XYstepSize = handles.XYstepSize + 1;
 end
 [hObject, eventdata, handles] = setXYStep(hObject, eventdata, handles, handles.XYstepSize);

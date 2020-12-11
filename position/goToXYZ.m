@@ -11,21 +11,22 @@ curZ = handles.stageZ;
 
 accuracy = 10;      % edit this to change the positional accuracy in um
 % move X
+set(handles.stageStatus, 'String', 'Moving X', 'ForegroundColor', [0,0,1]);
+guidata(hObject, handles);
 while abs(targetX-curX) >= accuracy
     % move here
-    disp('Moving X');
-    disp(curX);
+%     disp(curX);
     diff = round(targetX-curX,-1);      % round to the nearest 10
-    disp(diff);
+%     disp(diff);
     % if diff > 0, that means stage should move to right (inc)
     % else stage should move to left (dec)
     if diff > 0
-        diff = min(1000, diff);
+        diff = min(3000, diff);
         [hObject, eventdata, handles] = setXStep(hObject, eventdata, handles, diff);
         [hObject, eventdata, handles] = incX(hObject, eventdata, handles);
     else
         diff = abs(diff);
-        diff = min(1000, diff);
+        diff = min(3000, diff);
         [hObject, eventdata, handles] = setXStep(hObject, eventdata, handles, diff);
         [hObject, eventdata, handles] = decX(hObject, eventdata, handles);
     end
@@ -36,24 +37,26 @@ while abs(targetX-curX) >= accuracy
     end
     curX = handles.stageX;
 end
-disp('Done moving X');
+set(handles.stageStatus, 'String', 'Done with X', 'ForegroundColor', [0,0,1]);
+guidata(hObject, handles);
 
+set(handles.stageStatus, 'String', 'Moving Y', 'ForegroundColor', [0,0,1]);
+guidata(hObject, handles);
 % move Y
 while abs(targetY-curY) >= accuracy
     % move here
-    disp('Moving Y');
-    disp(curY);
+%     disp(curY);
     diff = targetY-curY;
-    disp(diff);
+%     disp(diff);
     % if diff > 0, that means stage should move up (inc)
     % else stage should move down (dec)
     if diff > 0
-        diff = min(1000, diff);
+        diff = min(3000, diff);
         [hObject, eventdata, handles] = setYStep(hObject, eventdata, handles, diff);
         [hObject, eventdata, handles] = incY(hObject, eventdata, handles);
     else
         diff = abs(diff);
-        diff = min(1000, diff);
+        diff = min(3000, diff);
         [hObject, eventdata, handles] = setYStep(hObject, eventdata, handles, diff);
         [hObject, eventdata, handles] = decY(hObject, eventdata, handles);
     end
@@ -61,7 +64,8 @@ while abs(targetY-curY) >= accuracy
     [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
     curY = handles.stageY;
 end
-disp('Done moving Y');
+set(handles.stageStatus, 'String', 'Done with Y', 'ForegroundColor', [0,0,1]);
+guidata(hObject, handles);
 
 % move Z
 while abs(targetZ-curZ) >= accuracy
@@ -72,5 +76,8 @@ while abs(targetZ-curZ) >= accuracy
 end
 
 [hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
+guidata(hObject, handles);
+
+set(handles.stageStatus, 'String', 'In position', 'ForegroundColor', [0,0,1]);
 guidata(hObject, handles);
 end
