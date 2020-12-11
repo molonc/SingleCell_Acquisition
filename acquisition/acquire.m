@@ -46,7 +46,14 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
         %}
         height = size(image, 1);
         width = size(image, 2);
-        figure = image(((height/row)*(r-1))+1:((height/row)*r),((width/col)*(c-1))+1:(width/col)*c);
+        if r == 1
+            firstAdjust = 0;
+            secondAdjust = 4;
+        elseif r == 2
+            firstAdjust = -4;
+            secondAdjust = 0;
+        end        
+        figure = image(((height/row)*(r-1))+1+firstAdjust:((height/row)*r)+secondAdjust,((width/col)*(c-1))+1+18:(width/col)*c-18);
     end
 
     function saveImage(well, tileRow, tileCol, row, col, r, c, folderPath, laserIndex)
@@ -63,8 +70,8 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
         laserStr = num2str(laserIndex-1, '%02d');
         filename = [rowStr, '_', colStr, '_0000_', laserStr, '_', laser, '.tif'];
         filepath = fullfile(colDir, filename);
-        imwrite(well, filepath);
         disp(['Saving image at ', filepath]);
+        imwrite(well, filepath, 'Compression', 'none', 'Resolution', 1);
     end
 
     function takeNsaveImage(handles, tileRow, tileCol, folderPath, laserIndex)
@@ -80,7 +87,7 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
         % then go to another row and repeat
         for r = 1:row
             for c = 1:col
-                well = splitImage(capture, row, col, r, c);
+                well = splitImage(capture, row, col, r, c);         % image is 604x604
                 well = im2uint16(well);     % convert image into 16bit images
                 % calculate the indices of row and column
                 % in the entire chip

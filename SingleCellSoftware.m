@@ -47,6 +47,7 @@ addpath(fullfile(pwd, 'acquisition'));
 addpath(fullfile(pwd, 'connection'));
 addpath(fullfile(pwd, 'position'));
 addpath(fullfile(pwd, 'lasers'));
+addpath(fullfile(pwd, 'debug'));        % you can remove this later
 end
 
 
@@ -798,12 +799,8 @@ try
     if get(hObject, 'Value') == 1
         set(handles.liveViewMsg, 'Visible', 'off');
         set(hObject, 'String', 'Stop Live View');
-        %TODO: replace below with image capture %
-        %TODO: get image size (probably from the package)
-        %     M = size(I,1);
-        %     N = size(I,2);
-        M = 1200;
-        N = 1920;
+        H = 1200;       % height
+        W = 1920;       % width
         camera_settings = getselectedsource(handles.cameraConnection);
         camera_settings.Shutter = handles.expTime; %set exposure time
         start(handles.cameraConnection);
@@ -813,18 +810,9 @@ try
 %             imaqmontage(capture);
             imshow(capture);
             hold on
-            showGrid(handles, M, N);
+            showGrid(handles, H, W);
             drawnow;
             hold off
-%             height = M;
-%             width = N;
-%             row = 2;
-%             col = 3;
-%             r = 1;
-%             c = 1;
-%             i = I(((height/row)*(r-1))+1:((height/row)*r),((width/col)*(c-1))+1:(width/col)*c);
-%             size(i)
-%             imshow(i);
         end
         if isvalid(hObject)
             stop(handles.cameraConnection);
@@ -1519,7 +1507,7 @@ pause(0.05);
 % TODO: add start functionality, with concatenation at the end 
 % get values from the check boxes here, and append it to 
 % handles.selected %
-try
+% try
     for laser = 1:length(handles.lasers)
         waitfor(handles.pauseORresume, 'Value', 0);
         handles.curLaser = handles.lasers(laser);
@@ -1544,9 +1532,9 @@ try
     set(handles.Quit, 'enable', 'on');
     guidata(hObject, handles);
     handles             % TODO: remove this
-catch
+% catch
     disp('finished.');
-end
+% end
 end
 
 % --- Executes on button press in pauseORresume.
