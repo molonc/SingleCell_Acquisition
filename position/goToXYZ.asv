@@ -21,6 +21,7 @@ while abs(targetX-curX) >= accuracy
     % else stage should move to left (dec)
     if diff > 0
         diff = min(1000, diff);
+        
         [hObject, eventdata, handles] = setXStep(hObject, eventdata, handles, diff);
         [hObject, eventdata, handles] = incX(hObject, eventdata, handles);
     else
@@ -30,10 +31,7 @@ while abs(targetX-curX) >= accuracy
         [hObject, eventdata, handles] = decX(hObject, eventdata, handles);
     end
     pause(.5);      % max movement takes about 0.5 second to finish
-    done = false;
-    while ~done
-        [hObject, eventdata, handles, done] = getCurrentXY(hObject, eventdata, handles);
-    end
+    [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
     curX = handles.stageX;
 end
 disp('Done moving X');

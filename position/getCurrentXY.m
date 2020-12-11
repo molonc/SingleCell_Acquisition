@@ -1,4 +1,4 @@
-function [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles)
+function [hObject, eventdata, handles, done] = getCurrentXY(hObject, eventdata, handles)
 % X
 fwrite(handles.stageConnection, [char(24) char(97) char(3) char(58)]);
 xPosData = fread(handles.stageConnection, 3, 'char');
@@ -28,4 +28,5 @@ end
 handles.stageX = currentPosition(1);
 handles.stageY = currentPosition(2);
 guidata(hObject, handles);
+done = true;
 end

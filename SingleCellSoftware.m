@@ -213,8 +213,10 @@ if handles.connectedScope == true
     set(handles.saveCorner, 'enable', 'on');
     set(handles.goToCorner, 'enable', 'on');
 end
-
-[hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
+done = false;
+while ~done
+    [hObject, eventdata, handles, done] = getCurrentXY(hObject, eventdata, handles);
+end
 [hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
 guidata(hObject, handles);
 end
@@ -310,9 +312,11 @@ function XYleft_Callback(hObject, eventdata, handles)
 set(hObject, 'enable', 'off');
 pause(.5);      % max movement takes about 0.5 second to finish
 set(hObject, 'enable', 'on');
-[hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
+done = false;
+while ~done
+    [hObject, eventdata, handles, done] = getCurrentXY(hObject, eventdata, handles);
+end
 % update pos on gui
-handles.stageX
 [hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
 guidata(hObject, handles);
 end
