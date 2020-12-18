@@ -4,8 +4,10 @@ targetY = position(2);
 targetZ = position(3);
 
 [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
+[hObject, eventdata, handles] = getCurrentZ(hObject, eventdata, handles);
 curX = handles.stageX;
 curY = handles.stageY;
+curZ = handles.stageZ;
 
 accuracy = 10;      % edit this to change the positional accuracy in um
 
@@ -65,10 +67,11 @@ guidata(hObject, handles);
 % move Z
 set(handles.stageStatus, 'String', 'Moving Z', 'ForegroundColor', [0,0,1]);
 guidata(hObject, handles);
-[hObject, eventdata, handles] = goToZ(hObject, eventdata, handles, targetZ);
-pause(1);       % TODO: replace this line with checking whether Z stage is still moving
-
-[hObject, eventdata, handles] = getCurrentZ(hObject, eventdata, handles);
+while abs(targetZ-curZ) >= accuracy
+    diff = round(target
+    [hObject, eventdata, handles] = getCurrentZ(hObject, eventdata, handles);
+    curZ = handles.stageZ;
+end
 set(handles.stageStatus, 'String', 'Done with Z', 'ForegroundColor', [0,0,1]);
 guidata(hObject, handles);
 

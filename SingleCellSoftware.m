@@ -370,17 +370,19 @@ end
 
 % --- Executes on button press in Zdown.
 function Zdown_Callback(hObject, eventdata, handles)
-z = handles.ZstepSize;
-handles.stageZ = handles.stageZ - z;
+[hObject, eventdata, handles] = decZ(hObject, eventdata, handles);
+[hObject, eventdata, handles] = getCurrentZ(hObject, eventdata, handles);
 [hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
+guidata(hObject, handles);
 end
 
 
 % --- Executes on button press in Zup.
 function Zup_Callback(hObject, eventdata, handles)
-z = handles.ZstepSize;
-handles.stageZ = handles.stageZ + z;
+[hObject, eventdata, handles] = incZ(hObject, eventdata, handles);
+[hObject, eventdata, handles] = getCurrentZ(hObject, eventdata, handles);
 [hObject, eventdata, handles] = updatePos(hObject, eventdata, handles);
+guidata(hObject, handles);
 end
 
 
@@ -446,7 +448,6 @@ if isnan(stepSize) || floor(stepSize) ~= stepSize || stepSize > 500 || stepSize 
 else
     handles.ZstepSize = stepSize;
 end
-[hObject, eventdata, handles] = setZstep(hObject, eventdata, handles);
 guidata(hObject, handles);
 end
 
@@ -473,8 +474,6 @@ function ZstepUp_Callback(hObject, eventdata, handles)
 if handles.ZstepSize < 500
     handles.ZstepSize = handles.ZstepSize + 1;
 end
-[hObject, eventdata, handles] = setZstep(hObject, eventdata, handles);
-guidata(hObject, handles);
 set(handles.ZstepEdit, 'String', num2str(handles.ZstepSize));
 guidata(hObject, handles);
 end
@@ -488,8 +487,6 @@ function ZstepDown_Callback(hObject, eventdata, handles)
 if handles.ZstepSize > 10
     handles.ZstepSize = handles.ZstepSize - 1;
 end
-[hObject, eventdata, handles] = setZstep(hObject, eventdata, handles);
-guidata(hObject, handles);
 set(handles.ZstepEdit, 'String', num2str(handles.ZstepSize));
 guidata(hObject, handles);
 end
