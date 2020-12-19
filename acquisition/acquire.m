@@ -1,11 +1,15 @@
 function [hObject, eventdata, handles] = acquire(hObject, eventdata, handles, laserIndex)
 lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
 
-    function goToTile(handles, row, col)
+    function goToTile(hObject, eventdata, handles, row, col)
        disp(['going to tile row ', num2str(row), ' col ', num2str(col)]);
-       % calculate the tile position based on row and col
-       % call goToXYZ with the position
-       pause(0.1);
+       set(handles.status, 'String', ['going to tile row ', num2str(row), ' col ', num2str(col)]);
+       guidata(hObject, handles);
+       X = handles.X(row, col);
+       Y = handles.Y(row, col);
+       Z = handles.Z(row, col);
+       position = [X, Y, Z];
+       [hObject, eventdata, handles] = goToXYZ(hObject, eventdata, handles, position);
     end
 
     function [hObject, eventdata, handles] = turnOnLaser(hObject, eventdata, handles, laser)
@@ -64,6 +68,8 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
         colDir = fullfile(folderPath, colStr);
         if ~exist(colDir, 'dir')
             disp(['Making column directory for ', colStr]);
+            set(handles.status, 'String', ['Making column directory for ', colStr]);
+            guidata(hObject, handles);
             mkdir(colDir)
         end
 
@@ -76,6 +82,8 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
 
     function takeNsaveImage(handles, tileRow, tileCol, folderPath, laserIndex)
         disp('Taking image');
+        set(handles.status, 'String', 'Taking image');
+        guidata(hObject, handles);
         pause(0.1);
         laser = char(lasers(handles.curLaser));
         % image obtained here
@@ -92,13 +100,12 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
                 % calculate the indices of row and column
                 % in the entire chip
                 saveImage(well, tileRow, tileCol, row, col, r, c, folderPath, laserIndex);
-                pause(0.1);
             end
         end
         pause(0.1);
     end
 
-    function handles = acquireTile(handles, row, col, folderPath, laserIndex)
+    function handles = acquireTile(hObject, eventdata, handles, row, col, folderPath, laserIndex)
         %{
         handles: GUI handle
         row: which tile in row to go to (each tile contains 
@@ -107,7 +114,7 @@ lasers = {'UV', 'Blue', 'Cyan', 'Teal', 'Green', 'Red'};
         folderPath: the folder at ./<laser>/S0000
         return: none
         %}
-        goToTile(handles, row, col);
+        goToTile(hObject, eventdata, handles, row, col);
         takeNsaveImage(handles, row, col, folderPath, laserIndex);
     end
 
@@ -126,16 +133,25 @@ if ~exist(curDir, 'dir')
     mkdir(curDir)
 end
 
+numRows = handles.chipRow/handles.imgRow;
+numCols = handles.chipCol/handles.imgCol;
+
 % acquisition
 ii = handles.curRow;
 jj = handles.curCol;
-% for i = ii:handles.chipRow/handles.imgRow
-%     for j = jj:handles.chipCol/handles.imgCol
-for i = ii:2
-    for j = jj:2
+for i = ii:numRows
+    for j = jj:numCols
+% for i = ii:2
+%     for j = jj:2
         if (get(handles.pauseORresume, 'Value') == 0)
             handles.paused = false;
-            handles = acquireTile(handles, i, j, curDir, laserIndex);
+            % travel in ZigZag fashion
+            if mod(i, 2) == 1
+                goToCol = j;
+            else
+                goToCol = numCols - j + 1;
+            end
+            handles = acquireTile(hObject, eventdata, handles, i, goToCol, curDir, laserIndex);
             handles.curCol = handles.curCol + 1;
         else
             handles.paused = true;

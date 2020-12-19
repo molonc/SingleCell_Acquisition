@@ -1,5 +1,7 @@
 function [hObject, eventdata, handles] = getCurrentZ(hObject, eventdata, handles)
-disp('TODO: replace this with actual z pos');
-handles.stageZ = 0;
+posStr = get(handles.scopeConnection.ZDrive.Position, 'DisplayString');
+posCell = str2double(strsplit(posStr, ' um'));
+zPos = posCell(1);
+handles.stageZ = zPos;
 guidata(hObject, handles);
 end

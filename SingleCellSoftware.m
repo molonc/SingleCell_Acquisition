@@ -111,10 +111,15 @@ handles.RedPower = 0;
 
 %% stage cal %%
 handles.XYstepSize = 10;
-handles.ZstepSize = 10;
+handles.ZstepSize = 1;
 handles.stageX = 0;
 handles.stageY = 0;
 handles.stageZ = 0;
+
+% positions on the chip
+handles.X = zeros(72/2, 72/3);
+handles.Y = zeros(72/2, 72/3);
+handles.Z = zeros(72/2, 72/3);
 
 %% settings %%
 handles.chipRow = 72;
@@ -442,11 +447,12 @@ function ZstepEdit_Callback(hObject, eventdata, handles)
 %        str2double(get(hObject,'String')) returns contents of ZstepEdit as a double
 prev = handles.ZstepSize;
 stepSize = str2double(get(hObject, 'String'));
-if isnan(stepSize) || floor(stepSize) ~= stepSize || stepSize > 500 || stepSize < 10
+if isnan(stepSize) || floor(stepSize) ~= stepSize || stepSize > 5000 || stepSize < 1
     set(hObject, 'String', num2str(prev));
-    warndlg('Step size must be an integer in the range of [10, 500]');
+    warndlg('Step size must be an integer in the range of [1, 5000]');
 else
     handles.ZstepSize = stepSize;
+    set(handles.stageStatus, 'String', ['Step: ', num2str(stepSize)], 'ForegroundColor', [0,0,1]);
 end
 guidata(hObject, handles);
 end
@@ -471,7 +477,7 @@ function ZstepUp_Callback(hObject, eventdata, handles)
 % hObject    handle to ZstepUp (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if handles.ZstepSize < 500
+if handles.ZstepSize < 5000
     handles.ZstepSize = handles.ZstepSize + 1;
 end
 set(handles.ZstepEdit, 'String', num2str(handles.ZstepSize));
@@ -484,7 +490,7 @@ function ZstepDown_Callback(hObject, eventdata, handles)
 % hObject    handle to ZstepDown (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-if handles.ZstepSize > 10
+if handles.ZstepSize > 1
     handles.ZstepSize = handles.ZstepSize - 1;
 end
 set(handles.ZstepEdit, 'String', num2str(handles.ZstepSize));
@@ -550,7 +556,6 @@ if get(hObject, 'Value') == 1
         corner = validCorner(handles);
         [hObject, eventdata, handles] = getCurrentXY(hObject, eventdata, handles);
         [hObject, eventdata, handles] = getCurrentZ(hObject, eventdata, handles);
-        handles.stageX
         switch corner
             case 1
                 disp('Saving coordinates for corner 1');
@@ -673,11 +678,6 @@ set(hObject, 'String', [{'Select a port'}, availablePorts]);
 guidata(hObject, handles);
 end
 
-
-function [hObject, eventdata, handles] = setZstep(hObject, eventdata, handles)
-disp('TODO: Set Z step here!');
-end
-
 % --- Executes on button press in connect2scope.
 function connect2scope_Callback(hObject, eventdata, handles)
 disp('Connecting to Nikon TiE ...');
@@ -693,6 +693,7 @@ handles.scopePortNum = str2double(portNum);
 % do the connection here
 % connecting to microscope means connecting to the Z stage & camera &
 % everything in between
+disp('Connecting to Nikon TiE ...');
 [hObject, eventdata, handles] = connect2scope(hObject, eventdata, handles);
 disp('Successfully connected to Nikon TiE.');
 
@@ -702,7 +703,6 @@ disp('Successfully connected to Camera.');
 
 set(handles.scopeStatus, 'String', 'Connected');
 handles.connectedScope = true;
-[hObject, eventdata, handles] = setZstep(hObject, eventdata, handles);
 
 if handles.connectedStage == true
     set(handles.firstToggle, 'enable', 'on');
@@ -751,7 +751,7 @@ set(handles.connect2scope, 'enable', 'on');
 set(handles.liveView, 'enable', 'off');
 set(handles.liveView, 'Value', 0);
 
-handles.ZstepSize = 10;
+handles.ZstepSize = 1;
 set(handles.ZstepEdit, 'String', num2str(handles.ZstepSize));
 set(handles.ZstepEdit, 'enable', 'off');
 set(handles.ZstepUp, 'enable', 'off');
@@ -1499,12 +1499,14 @@ set(handles.repetitionsList, 'enable', 'off');
 set(handles.outputFormatList, 'enable', 'off');
 set(handles.outputDirButton, 'enable', 'off');
 
+% calculate the positions it needs to travel to 
+[hObject, handles] = calcPos(hObject, handles);
+
 guidata(hObject, handles);
 pause(0.05);
-% TODO: add start functionality, with concatenation at the end 
-% get values from the check boxes here, and append it to 
-% handles.selected %
-% try
+
+% TODO: uncomment this try-catch block to unmask any unexpected errors.
+try
     for laser = 1:length(handles.lasers)
         waitfor(handles.pauseORresume, 'Value', 0);
         handles.curLaser = handles.lasers(laser);
@@ -1520,7 +1522,7 @@ pause(0.05);
     guidata(hObject, handles);
     pause(1);
     
-    % concatenation
+    % concatenation (TODO: haven't implemented, not urgent, might not be useful)
     handles.selected = [];
     handles.selected = checkConcat(hObject, eventdata, handles);
     set(handles.status, 'String', 'Concatenating images ...');
@@ -1529,9 +1531,9 @@ pause(0.05);
     set(handles.Quit, 'enable', 'on');
     guidata(hObject, handles);
     handles             % TODO: remove this
-% catch
+catch
     disp('finished.');
-% end
+end
 end
 
 % --- Executes on button press in pauseORresume.
