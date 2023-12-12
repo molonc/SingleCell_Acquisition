@@ -1,19 +1,20 @@
-function [hObject, eventdata, handles] = connect2lasers(hObject, eventdata, handles)
-disp(['Connecting to lasers on COM ', num2str(handles.laserPortNum)]);
-handles.laserConnection = serial(['COM', num2str(handles.laserPortNum)]);
-set(handles.laserConnection,...
-    'baudrate', 9600,...
-    'parity', 'none',...
-    'databits', 8,...
-    'stopbits', 1,...
-    'terminator', 13,...
-    'bytesAvailableFcnMode', 'byte',...
-    'bytesAvailableFcnCount', 2,...
-    'flowControl', 'none');
-fopen(handles.laserConnection);
+function [app] = connect2lasers(app)
+    laser_serial = serialport(getConfig('LASER_PORT'), 9600);
+    laser_serial.DataBits = 8;
+    laser_serial.Parity = 'none';
+    laser_serial.StopBits = 1;
+    laser_serial.configureCallback('byte', 2, connect_lasers_callback(laser_serial))
+    laser_serial.FlowControl = 'none';
+    configureTerminator(laser_serial, 13);
+    app.laser = laser_serial;
 
-initCmd1 = sscanf('57 02 FF 50', '%2X');
-initCmd2 = sscanf('57 03 AB 50', '%2X');
-fwrite(handles.laserConnection, initCmd1, 'uint8');
-fwrite(handles.laserConnection, initCmd2, 'uint8');
-end
+    initCmd1 = sscanf('57 02 FF 50', '%2X');
+    initCmd2 = sscanf('57 03 AB 50', '%2X');
+    writeline(app.laser, initCmd1, 'uint8');
+    writeline(app.laser, initCmd2, 'uint8');
+
+function connect_lasers_callback(src)
+    data = fread(src, src.BytesAvailable);
+    disp(['Received data: ' char(data)])
+
+    
